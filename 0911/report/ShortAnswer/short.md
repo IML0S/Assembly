@@ -1,5 +1,5 @@
 # 1. In an 8-bit binary number, which is the most significant bit (MSB)?
-가장 왼쪽 비트(비트 7)
+가장 왼쪽 비트(비트 넘버7)이다
 
 # 2. What is the decimal representation of each of the following unsigned binary integers?
 - a. 00110101 -> 53  
