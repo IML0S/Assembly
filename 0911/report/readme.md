@@ -102,30 +102,3 @@
 
   * 오른쪽부터 1이 나오기 전까지 그대로 적음
   * 이후 모든 자리의 0과 1을 바꿈
-
----
-
-## Questions You Might Ask
-
-**Q. What Are Assemblers and Linkers?**
-A. 어셈블러: 어셈블리 → 기계어 변환 프로그램
-링커: 여러 개의 번역된 코드를 하나의 실행 파일로 연결하는 도구
-
-**Q. What Types of Programs Can Be Created Using MASM?**
-A. MASM은 x86 아키텍처 기반 어셈블리 언어 작성/실행 가능
-→ 하드웨어와 밀접한 저수준 프로그램 작성에 사용
-예: 디바이스 드라이버, 임베디드 시스템 SW, 게임 엔진 루틴, 최적화 유틸리티
-
-**Q. How Does Assembly Language Relate to Machine Language?**
-A. 어셈블리 언어는 사람이 읽을 수 있는 기계어 버전
-예: `MOV AL, 97` → `10110000 01100001`
-
-**Q. How Do C++ and Java Relate to Assembly Language?**
-A. 고급 언어(C++, Java)는 컴파일러를 통해 어셈블리어/기계어로 변환되어 실행
-
-**Q. Is Assembly Language Portable?**
-A. CPU 구조에 따라 명령어가 다르므로 이식성이 낮다
-
-**Q. Why Learn Assembly Language?**
-A. CPU와 메모리 동작 원리를 이해하고, 고급 언어보다 빠르고 효율적인 코드 작성 가능
-특히 운영체제, 임베디드 시스템 개발에서는 필수
