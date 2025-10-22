@@ -1,5 +1,3 @@
-# Assembly Language Chapter 5 Review
-
 ## 1. Exchange upper and lower words in a doubleword variable named `three`
 ```asm
 mov ax, WORD PTR three
