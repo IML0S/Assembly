@@ -1,5 +1,5 @@
 
-# Short Answer 문제 풀이 (False 이유 포함)
+# Short Answer 문제 풀이
 
 1. **Which statements belong in a procedure's epilogue when the procedure has stack parameters and local variables?**  
 → 스택 매개변수와 지역 변수가 있는 프로시저의 에필로그에는 어떤 명령들이 포함되는가?  
