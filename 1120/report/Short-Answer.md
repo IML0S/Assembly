@@ -13,7 +13,7 @@ ret (n*4)
 
 2. **When a C function returns a 32-bit integer, where is the return value stored?**  
 → C 함수가 32비트 정수를 반환할 때 반환값은 어디에 저장되는가?  
-**Answer:** EAX register.
+**A:** EAX register.
 
 3. **How does a program using the STDCALL calling convention clean up the stack after a procedure call?**  
 → STDCALL 호출 규약에서는 프로시저 호출 후 스택을 어떻게 정리하는가?  
