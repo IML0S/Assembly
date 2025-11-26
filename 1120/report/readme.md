@@ -1,192 +1,216 @@
+#11/20 강의 정리
+# \## 1. 스택 프레임(Stack Frame)
 
-# 11/20 강의 정리
+스택 프레임은 **서브루틴(프로시저)이 실행될 때 스택에 생기는
+구조**입니다.
 
-## 서브루틴(Subroutine) 명칭
+구성 요소(위 → 아래):
 
-  언어    명칭
-  ------- ---------------------------
-  C/C++   함수(Function)
-  Java    메서드(Method)
-  MASM    프로시저(Procedure, PROC)
+1.  **인수(Arguments)** --- 프로시저에 전달된 값\
+2.  **복귀 주소(Return Address)** --- 프로시저 종료 후 돌아갈 주소\
+3.  **이전 EBP 저장** --- 기존 스택 프레임 보존\
+4.  **지역 변수(Local Variables)**\
+5.  **저장된 레지스터들(push 한 값)**
 
-**Arguments(인수/인자)**: 호출자가 전달하는 값\
-**Parameters(매개변수)**: 서브루틴이 받는 값
+➡ 고급 언어의 함수 스택 구조와 동일하며, MASM에서도 똑같이 적용됩니다.
 
-------------------------------------------------------------------------
+### 왜 필요한가?
 
-## 스택 프레임(Stack frame)
-
-프로시저 호출 시 스택에 생성되는 영역.
-
-구성 순서(위 → 아래):
-
-1.  전달된 인수(arguments)\
-2.  복귀 주소(return address)\
-3.  이전 EBP\
-4.  지역 변수(local variables)\
-5.  저장된 레지스터들(push)
-
-push/pop은 **4바이트 단위**로 동작.
+-   함수 내부에서 지역 변수, 매개변수, 레지스터 값을 안정적으로 관리하기
+    위해서\
+-   여러 번 호출되거나 재귀가 실행될 때 **겹치지 않는 구조**가 중요함
 
 ------------------------------------------------------------------------
 
-## 인수 전달 방식
+# \## 2. 인수 전달 방식 --- 값 / 참조
 
-### ✔ 값 인수 (value)
+### ✔ 값(Value) 전달
 
-    push val1
+값 자체를 스택에 push
 
-값 그 자체를 push.
+``` asm
+push val1
+```
 
-### ✔ 참조 인수 (reference)
+### ✔ 참조(Reference) 전달
 
-    push OFFSET val1
+주소(OFFSET)를 push
 
-주소를 push(C/C++의 `&val1`과 동일).
+``` asm
+push OFFSET val1
+```
 
 ### ✔ 배열 전달
 
-배열 이름 자체가 배열의 첫 주소 →
+배열 이름 자체가 첫 번째 원소의 주소(포인터)
 
-    OFFSET array
+``` asm
+push OFFSET array
+```
 
-------------------------------------------------------------------------
-
-## 명시적 스택 매개변수 (explicit stack parameters)
-
-스택 배치:
-
-    [EBP+8]  = 첫 번째 인수
-    [EBP+12] = 두 번째 인수
-    ...
-
-예:
-
-    x_param EQU [ebp+8]
-    y_param EQU [ebp+12]
+➡ C/C++에서 배열·포인터 전달 방식과 완전히 동일합니다.
 
 ------------------------------------------------------------------------
 
-## 스택 정리(Stack cleanup)
+# \## 3. 명시적 스택 매개변수
 
-### ✔ C 언어(cdecl)
+매개변수는 EBP 기준으로 접근한다:
 
-Caller가 정리:
+    [EBP+8]  → 첫번째 인자
+    [EBP+12] → 두번째 인자
 
-    call AddTwo
-    add esp, 8
+예)
 
-### ✔ STDCALL
+``` asm
+x_param EQU [ebp+8]
+y_param EQU [ebp+12]
+```
 
-Callee가 정리:
-
-    ret 8
+➡ 코드 가독성을 위해 많이 사용됨.
 
 ------------------------------------------------------------------------
 
-## 지역 변수(Local variables)
+# \## 4. 호출 규약 (Calling Conventions)
 
-EBP 아래에 생성됨:
+## ✔ CDECL (C 언어 기본 규약)
+
+Caller(호출한 쪽)가 스택 정리
+
+``` asm
+call AddTwo
+add esp, 8
+```
+
+## ✔ STDCALL
+
+Callee(프로시저 내부)가 스택 정리
+
+``` asm
+ret 8
+```
+
+➡ Windows API는 대부분 STDCALL을 사용
+
+------------------------------------------------------------------------
+
+# \## 5. 지역 변수(Local Variables)
+
+지역 변수는 EBP 아래에 생성:
 
     [ebp-4], [ebp-8], ...
 
-해당 프로시저에서만 사용 가능.
+특징: - 함수가 끝나면 사라짐\
+- 외부에서 접근 불가\
+- C/C++ 지역 변수와 동일한 생명주기
 
 ------------------------------------------------------------------------
 
-## LEA 명령어
+# \## 6. LEA 명령어
 
-간접 주소 계산:
+**주소 계산 후 저장** (연산 X)
 
-    LEA esi, [ebp-8]
+``` asm
+LEA esi, [ebp-8]
+```
 
-OFFSET은 **컴파일 시간**, LEA는 **런타임 계산**.
+OFFSET은 컴파일 타임 계산\
+LEA는 런타임 계산 가능 → 더 유연함
 
 ------------------------------------------------------------------------
 
-## ENTER / LEAVE
+# \## 7. ENTER / LEAVE
 
 ### ENTER n, 0
 
-= 자동 스택 프레임 생성
-
-    push ebp
-    mov ebp, esp
-    sub esp, n
+스택 프레임 자동 구성\
+(push ebp → mov ebp,esp → sub esp, n)
 
 ### LEAVE
 
-= 자동 정리
+스택 프레임 자동 해제\
+(mov esp,ebp → pop ebp)
 
-    mov esp, ebp
-    pop ebp
-
-------------------------------------------------------------------------
-
-## LOCAL 지시어
-
-여러 지역 변수 선언:
-
-    LOCAL var1:DWORD, arr:BYTE
-
-ENTER는 이름 없는 공간 확보이고\
-LOCAL은 **이름 있는 지역 변수** 생성.
+➡ 초보자에게는 편하지만 성능상 비효율적일 수 있어 잘 안 씀
 
 ------------------------------------------------------------------------
 
-## 재귀(Recursion)
+# \## 8. LOCAL 지시어
+
+이름을 가진 지역 변수를 선언:
+
+``` asm
+LOCAL count:DWORD, buffer:BYTE
+```
+
+➡ ENTER로 확보한 "이름 없는 공간"보다 훨씬 편리
+
+------------------------------------------------------------------------
+
+# \## 9. 재귀(Recursion)
+
+프로시저가 **자기 자신을 호출하는 것**.
 
 종료 조건 없으면 무한 재귀:
 
 ``` asm
-Endless PROC
-  call Endless
-  ret
-Endless ENDP
+call Endless
 ```
 
-정상 재귀 예:
+정상 재귀 예: CalcSum
 
 ``` asm
-CalcSum PROC
-  cmp ecx, 0
-  jz L2
-  add eax, ecx
-  dec ecx
-  call CalcSum
-L2: ret
-CalcSum ENDP
+cmp ecx,0
+jz L2
+add eax,ecx
+dec ecx
+call CalcSum
 ```
 
-------------------------------------------------------------------------
-
-## INVOKE 지시어
-
-### 기존 호출 방식
-
-    push OFFSET array
-    push LENGTHOF array
-    push TYPE array
-    call DumpArray
-
-### INVOKE 사용
-
-    INVOKE DumpArray, OFFSET array, LENGTHOF array, TYPE array
-
-스택 push 순서는 .MODEL 호출 규약(STDCALL)에 따름.
+➡ 재귀가 끝날 때 스택 프레임이 차례대로 해제되며 값이 전달됨
 
 ------------------------------------------------------------------------
 
-## ADDR 연산자
+# \## 10. INVOKE
 
-    INVOKE Swap, ADDR var1, ADDR var2
+여러 인자를 간단히 호출할 수 있는 MASM의 고급 문법:
 
--   INVOKE 전용\
--   상수 주소만 가능 (`[ebp+12]` 불가)
+### 기존 방식
+
+``` asm
+push OFFSET array
+push LENGTHOF array
+push TYPE array
+call DumpArray
+```
+
+### INVOKE 방식
+
+``` asm
+INVOKE DumpArray, OFFSET array, LENGTHOF array, TYPE array
+```
+
+장점: - 파라미터 자동 push\
+- 호출 규약에 따른 스택 정리 자동 처리\
+- 코드 가독성 ↑
 
 ------------------------------------------------------------------------
 
-## PROC 지시어 (이름 있는 매개변수)
+# \## 11. ADDR 연산자
+
+INVOKE에서 포인터 인수 전달:
+
+``` asm
+INVOKE Swap, ADDR var1, ADDR var2
+```
+
+주의: - `[ebp+8]` 같은 표현은 넣을 수 없음\
+- INVOKE 전용
+
+------------------------------------------------------------------------
+
+# \## 12. PROC / PROTO --- 함수 선언과 원형
+
+### PROC (프로시저 정의)
 
 ``` asm
 AddTwo PROC val1:DWORD, val2:DWORD
@@ -196,75 +220,57 @@ AddTwo PROC val1:DWORD, val2:DWORD
 AddTwo ENDP
 ```
 
-PROC + STDCALL → MASM이 자동으로:
+MASM이 자동으로: - push ebp\
+- mov ebp, esp\
+- ret 8
 
-    push ebp
-    mov ebp, esp
-    ...
-    ret (인수 크기)
+등을 생성해 줌(STDCALL 기준)
 
-생성.
-
-------------------------------------------------------------------------
-
-## PROTO 지시어
+### PROTO (프로토타입)
 
 ``` asm
 AddTwo PROTO val1:DWORD, val2:DWORD
 ```
 
-INVOKE 보다 **앞에** 있어야 함.
+➡ 후에 등장하는 프로시저를 미리 사용할 수 있게 함\
+(C의 함수 원형과 완전히 동일)
 
 ------------------------------------------------------------------------
 
-## 프로시저 숨김(PRIVATE)
+# \## 13. PRIVATE / PUBLIC / EXTERN / EXTERNDEF
 
-기본: 모든 PROC는 public.
+### ✔ PRIVATE
 
-숨기기:
+해당 파일 내부에서만 사용
 
-    mySub PROC PRIVATE
+``` asm
+mySub PROC PRIVATE
+```
 
-파일 전체 기본 private:
+### ✔ PUBLIC
 
-    OPTION PROC:PRIVATE
-    PUBLIC mySub
+다른 모듈에서 사용 가능
 
-------------------------------------------------------------------------
+``` asm
+PUBLIC mySub
+```
 
-## 외부 프로시저 호출(EXTERN)
+### ✔ EXTERN
 
-    EXTERN AddTwo@8 : PROC
+외부 파일에 있는 함수 선언
 
-@n = 매개변수가 사용하는 스택 바이트 수.
+``` asm
+EXTERN AddTwo@8:PROC
+```
 
-INVOKE 사용 시 PROTO로 대체 가능.
+### ✔ EXTERNDEF
 
-------------------------------------------------------------------------
+PUBLIC + EXTERN 통합 역할
 
-## 변수/심볼 공유: PUBLIC, EXTERN, EXTERNDEF
+vars.inc:
 
-### EXPORT:
+``` asm
+EXTERNDEF count:DWORD, SYM1:ABS
+```
 
-    PUBLIC count, SYM1
-
-### IMPORT:
-
-    EXTERN count:DWORD, SYM1:ABS
-
-### EXTERNDEF(둘 다 자동)
-
-var.inc:
-
-    EXTERNDEF count:DWORD, SYM1:ABS
-
-------------------------------------------------------------------------
-
-#  요약
-
--   프로시저는 스택 프레임을 만든다.\
--   인수는 `[ebp+8]`, 지역 변수는 `[ebp-4]`부터.\
--   호출 규약(cdecl, stdcall)에 따라 스택 정리 주체가 다르다.\
--   LOCAL, PROC, PROTO, INVOKE, ADDR로 고급 언어 스타일 구현.\
--   PRIVATE/PUBLIC/EXTERN/EXTERNDEF로 모듈별 캡슐화 가능.\
--   재귀는 스택이 깊어지므로 종료 조건 필수.
+여러 파일에서 공유할 때 매우 유용함.
