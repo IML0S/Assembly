@@ -37,35 +37,35 @@ CMPS 명령은 어떤 점에서 모호한가?
 
 ## 문제 6  
 **Q : What Direction flag setting is used in the Str_trim procedure from Section 9.3?**  
-9.3절의 Str_trim 프로시저에서는 어떤 방향 플래그 설정이 사용되는가?  
+Str_trim 프로시저에서는 어떤 방향 플래그 설정이 사용되는가?  
 **A :** 뒤에서부터 비교하기 위해 1로 세팅된다.  
 
 ---
 
 ## 문제 7  
 **Q : Why does the Str_trim procedure from Section 9.3 use the JNE instruction?**  
-9.3절의 Str_trim 프로시저가 왜 JNE 명령을 사용하는가?  
+Str_trim 프로시저가 왜 JNE 명령을 사용하는가?  
 **A :** 받은 문자와 다른 부분을 찾았을 때, 그 다음 주소에 널 스트링을 넣어 문자열을 매듭짓기 위함이다.  
 
 ---
 
 ## 문제 8  
 **Q : What happens in the Str_ucase procedure from Section 9.3 if the target string contains a digit?**  
-9.3절의 Str_ucase 프로시저에서 문자열에 숫자가 포함되어 있으면 어떻게 되는가?  
+Str_ucase 프로시저에서 문자열에 숫자가 포함되어 있으면 어떻게 되는가?  
 **A :** 'a' ~ 'z' 범위 내에 있는 경우에만 대문자로 변환한다. 숫자는 'a'보다 작으므로 그냥 아무 일없이 점프한다.  
 
 ---
 
 ## 문제 9  
 **Q : If the Str_length procedure from Section 9.3 used SCASB, which repeat prefix would be most appropriate?**  
-9.3절의 Str_length 프로시저가 SCASB를 사용한다면 어떤 반복 접두사가 가장 적절한가?  
+Str_length 프로시저가 SCASB를 사용한다면 어떤 반복 접두사가 가장 적절한가?  
 **A :** REPNZ 또는 REPNE  
 
 ---
 
 ## 문제 10  
 **Q : If the Str_length procedure from Section 9.3 used SCASB, how would it calculate and return the string length?**  
-9.3절의 Str_length 프로시저가 SCASB를 사용한다면 문자열 길이를 어떻게 계산하고 반환하는가?  
+Str_length 프로시저가 SCASB를 사용한다면 문자열 길이를 어떻게 계산하고 반환하는가?  
 **A :** 길이는 (EDI - pString) - 1 이다.  
 
 ---
@@ -79,19 +79,19 @@ CMPS 명령은 어떤 점에서 모호한가?
 
 ## 문제 12  
 **Q : In the FillArray procedure from the Binary Search example in Section 9.5, why must the Direction flag be cleared by the CLD instruction?**  
-9.5절의 FillArray 프로시저에서 왜 CLD 명령으로 방향 플래그를 0으로 설정해야 하는가?  
+FillArray 프로시저에서 왜 CLD 명령으로 방향 플래그를 0으로 설정해야 하는가?  
 **A :** 낮은 주소부터 차례대로 값을 채우기 위해  
 
 ---
 
 ## 문제 13  
 **Q : In the BinarySearch procedure from Section 9.5, why could the statement at label L2 be removed without affecting the outcome?**  
-9.5절의 BinarySearch 프로시저에서 왜 L2의 명령을 지워도 결과가 달라지지 않는가?  
+BinarySearch 프로시저에서 왜 L2의 명령을 지워도 결과가 달라지지 않는가?  
 **A :** 이미 edx와 edi는 비교되었다.  
 
 ---
 
 ## 문제 14  
 **Q : In the BinarySearch procedure from Section 9.5, how might the statement at label L4 be eliminated?**  
-9.5절의 BinarySearch 프로시저에서 L4의 명령은 어떻게 제거할 수 있는가?  
+BinarySearch 프로시저에서 L4의 명령은 어떻게 제거할 수 있는가?  
 **A :** L4를 지우고 다른 점프문을 `jmp L1`으로 바꾼다.  
